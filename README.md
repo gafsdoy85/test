@@ -1,8 +1,8 @@
 <!-- Genel Stats -->
-<iframe src="https://gafsdoy85.github.io/test/index.html?username=switlydev&mode=general&theme=radical" width="495" height="195"></iframe>  <br>
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=switlydev&show_icons=true&theme=radical)
 
 <!-- Streak -->
-<iframe src="https://gafsdoy85.github.io/test/index.html?username=switlydev&mode=streak&theme=dracula" width="495" height="195"></iframe>  
+![GitHub Streak](https://streak-stats.demolab.com?user=switlydev&theme=radical)
 
 <!-- Diller -->
-<iframe src="https://gafsdoy85.github.io/test/index.html?username=switlydev&mode=languages&theme=tokyonight" width="495" height="195"></iframe>  
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=switlydev&layout=compact&theme=radical)

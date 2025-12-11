@@ -1,168 +1,59 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
-    <title>GitHub Stats</title>
+    <title>Render With Time</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            background: transparent;
+            margin: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-
         canvas {
-            display: block;
+            border-radius: 12px;
         }
     </style>
 </head>
 
 <body>
     <canvas id="c" width="495" height="195"></canvas>
-    <script>
-        const P = new URLSearchParams(location.search);
-        const U = P.get('username') || 'octocat';
-        const M = P.get('mode') || 'general';
-        const T = P.get('theme') || 'radical';
 
-        const themes = {
-            radical: { bg1: '#141321', bg2: '#1a1b27', accent: '#fe428e', text: '#a9fef7', title: '#fe428e', icon: '#f8d847' },
-            dark: { bg1: '#0d1117', bg2: '#161b22', accent: '#58a6ff', text: '#c9d1d9', title: '#58a6ff', icon: '#f0883e' },
-            tokyonight: { bg1: '#1a1b27', bg2: '#24283b', accent: '#7aa2f7', text: '#a9b1d6', title: '#70a5fd', icon: '#9ece6a' },
-            dracula: { bg1: '#282a36', bg2: '#44475a', accent: '#ff79c6', text: '#f8f8f2', title: '#ff79c6', icon: '#bd93f9' },
-            nord: { bg1: '#2e3440', bg2: '#3b4252', accent: '#88c0d0', text: '#eceff4', title: '#88c0d0', icon: '#a3be8c' },
-            gruvbox: { bg1: '#1d2021', bg2: '#282828', accent: '#fabd2f', text: '#ebdbb2', title: '#fabd2f', icon: '#b8bb26' }
+    <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+
+        const img = new Image();
+
+        // 🔥 BURAYI kendi repo yolunla değiştir
+        img.src = "https://raw.githubusercontent.com/gafsdoy85/gafsdoy85/main/dynamic.png";
+
+        img.crossOrigin = "anonymous";
+
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, 495, 195);
+            drawClock();
         };
 
-        const canvas = document.getElementById('c');
-        const ctx = canvas.getContext('2d');
-        const c = themes[T] || themes.radical;
+        function drawClock() {
+            const now = new Date();
+            const hh = now.getHours().toString().padStart(2, "0");
+            const mm = now.getMinutes().toString().padStart(2, "0");
+            const ss = now.getSeconds().toString().padStart(2, "0");
 
-        function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+            const time = `${hh}:${mm}:${ss}`;
 
-        function draw(s) {
-            const g = ctx.createLinearGradient(0, 0, 495, 195);
-            g.addColorStop(0, c.bg1);
-            g.addColorStop(1, c.bg2);
-            ctx.fillStyle = g;
-            rr(0, 0, 495, 195, 10); ctx.fill();
+            // arka plan
+            ctx.fillStyle = "rgba(0,0,0,0.35)";
+            ctx.fillRect(350, 10, 130, 35);
 
-            ctx.fillStyle = c.accent;
-            ctx.fillRect(0, 0, 495, 3);
-
-            ctx.strokeStyle = c.accent + '40';
-            rr(0.5, 0.5, 494, 194, 10); ctx.stroke();
-
-            if (M === 'streak') {
-                ctx.fillStyle = c.title;
-                ctx.font = 'bold 18px Inter,sans-serif';
-                ctx.fillText(s.name + "'s Streak", 25, 32);
-
-                ctx.fillStyle = c.accent;
-                ctx.font = 'bold 52px Inter,sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(s.streak, 247, 100);
-                ctx.fillStyle = c.text;
-                ctx.font = '13px Inter,sans-serif';
-                ctx.fillText('🔥 Current Streak', 247, 125);
-                ctx.textAlign = 'left';
-                ctx.fillText('🏆 Longest: ' + s.longest + ' days', 70, 168);
-                ctx.fillText('📊 Total: ' + s.total, 290, 168);
-            } else if (M === 'languages') {
-                ctx.fillStyle = c.title;
-                ctx.font = 'bold 18px Inter,sans-serif';
-                ctx.fillText(s.name + "'s Languages", 25, 32);
-
-                const lc = { 'JavaScript': '#f7df1e', 'TypeScript': '#3178c6', 'Python': '#3776ab', 'Java': '#ed8b00', 'C++': '#00599c', 'Go': '#00add8', 'Rust': '#dea584', 'Ruby': '#cc342d', 'PHP': '#777bb4', 'CSS': '#264de4', 'HTML': '#e34c26', 'Vue': '#42b883', 'C#': '#239120' };
-                const tot = s.langs.reduce((a, b) => a + b[1], 0) || 1;
-                let y = 52;
-                s.langs.slice(0, 5).forEach(([l, n]) => {
-                    const p = (n / tot) * 100;
-                    ctx.fillStyle = c.text;
-                    ctx.font = '12px Inter,sans-serif';
-                    ctx.fillText(l, 25, y + 11);
-                    ctx.fillStyle = '#fff1';
-                    rr(120, y, 200, 16, 3); ctx.fill();
-                    ctx.fillStyle = lc[l] || c.accent;
-                    rr(120, y, 200 * p / 100, 16, 3); ctx.fill();
-                    ctx.fillStyle = c.text;
-                    ctx.fillText(p.toFixed(1) + '%', 335, y + 11);
-                    y += 24;
-                });
-            } else {
-                ctx.fillStyle = c.title;
-                ctx.font = 'bold 18px Inter,sans-serif';
-                ctx.fillText(s.name + "'s GitHub Stats", 25, 32);
-                ctx.fillStyle = c.text + '99';
-                ctx.font = '11px Inter,sans-serif';
-                ctx.fillText('@' + s.user, 25, 48);
-
-                ctx.font = '13px Inter,sans-serif';
-                const l = 25, r = 265; let y = 75;
-
-                ctx.fillStyle = c.icon; ctx.fillText('⭐', l, y);
-                ctx.fillStyle = c.text; ctx.fillText('Stars:', l + 20, y);
-                ctx.fillStyle = c.title; ctx.fillText(s.stars, l + 80, y);
-
-                ctx.fillStyle = c.icon; ctx.fillText('🍴', l, y + 25);
-                ctx.fillStyle = c.text; ctx.fillText('Forks:', l + 20, y + 25);
-                ctx.fillStyle = c.title; ctx.fillText(s.forks, l + 80, y + 25);
-
-                ctx.fillStyle = c.icon; ctx.fillText('📦', l, y + 50);
-                ctx.fillStyle = c.text; ctx.fillText('Repos:', l + 20, y + 50);
-                ctx.fillStyle = c.title; ctx.fillText(s.repos, l + 80, y + 50);
-
-                ctx.fillStyle = c.icon; ctx.fillText('👥', r, y);
-                ctx.fillStyle = c.text; ctx.fillText('Followers:', r + 20, y);
-                ctx.fillStyle = c.title; ctx.fillText(s.followers, r + 95, y);
-
-                ctx.fillStyle = c.icon; ctx.fillText('👤', r, y + 25);
-                ctx.fillStyle = c.text; ctx.fillText('Following:', r + 20, y + 25);
-                ctx.fillStyle = c.title; ctx.fillText(s.following, r + 95, y + 25);
-
-                ctx.fillStyle = c.icon; ctx.fillText('💻', r, y + 50);
-                ctx.fillStyle = c.text; ctx.fillText('Top:', r + 20, y + 50);
-                ctx.fillStyle = c.title; ctx.fillText(s.top, r + 55, y + 50);
-            }
+            ctx.font = "20px Inter, sans-serif";
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "center";
+            ctx.fillText(time, 415, 35);
         }
-
-        (async () => {
-            try {
-                const u = await (await fetch('https://api.github.com/users/' + U)).json();
-                const rp = await (await fetch('https://api.github.com/users/' + U + '/repos?per_page=100')).json();
-
-                let stars = 0, forks = 0, langs = {};
-                rp.forEach(r => {
-                    stars += r.stargazers_count || 0;
-                    forks += r.forks_count || 0;
-                    if (r.language) langs[r.language] = (langs[r.language] || 0) + 1;
-                });
-
-                const sl = Object.entries(langs).sort((a, b) => b[1] - a[1]);
-
-                draw({
-                    name: u.name || u.login,
-                    user: u.login,
-                    stars, forks,
-                    repos: u.public_repos,
-                    followers: u.followers,
-                    following: u.following,
-                    top: sl[0]?.[0] || 'N/A',
-                    langs: sl,
-                    streak: Math.floor(Math.random() * 30) + 1,
-                    longest: Math.floor(Math.random() * 100) + 30,
-                    total: Math.floor(Math.random() * 2000) + 500
-                });
-            } catch (e) {
-                ctx.fillStyle = '#ff4444';
-                ctx.font = '14px sans-serif';
-                ctx.fillText('Error: ' + e.message, 20, 100);
-            }
-        })();
     </script>
 </body>
-
 </html>

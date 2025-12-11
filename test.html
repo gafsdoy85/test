@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Render With Time</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            border-radius: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="c" width="495" height="195"></canvas>
+
+    <script>
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+
+        // 🔥 PNG görüntüsünü alıyor
+        const img = new Image();
+        img.src = "dynamic.png";  // PNG dosyanız repo’da olacak
+
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, 495, 195);
+            drawClock();
+        };
+
+        // 🔥 Saati çizen fonksiyon
+        function drawClock() {
+            const now = new Date();
+            
+            const hh = now.getHours().toString().padStart(2, "0");
+            const mm = now.getMinutes().toString().padStart(2, "0");
+            const ss = now.getSeconds().toString().padStart(2, "0");
+
+            const time = `${hh}:${mm}:${ss}`;
+
+            // arka plan blur benzeri
+            ctx.fillStyle = "rgba(0,0,0,0.35)";
+            ctx.fillRect(350, 10, 130, 35);
+
+            // yazı
+            ctx.font = "20px Inter, sans-serif";
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "center";
+            ctx.fillText(time, 415, 35);
+        }
+    </script>
+</body>
+</html>
